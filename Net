@@ -1,0 +1,8 @@
+http://databasebestpractices.com/query-find-size-database-netezza-environment/
+Query to find the size of each database in Netezza environment:
+SELECT ORX.database::nvarchar(64) AS "DatabaseName" , case when sum(SOD.used_bytes) is null then 0 else SUM(SOD.used_bytes)/1073741824 end AS "UseSpace_GB", case when sum(SOD.allocated_bytes) is null then 0 else SUM(SOD.allocated_bytes)/1073741824 end AS "AllocatedSpace_GB", current_timestamp as "CurrentTime" FROM _V_SYS_OBJECT_DSLICE_INFO SOD INNER JOIN _V_OBJ_RELATION_XDB ORX ON ORX.objid = SOD.tblid GROUP BY "CurrentTime", "DatabaseName" ORDER BY "DatabaseName" --------------http://databasebestpractices.com/query-find-tables-consuming-space-disk-netezza/
+Query to find tables consuming more space in a disk – Netezza
+select objname as table_name, database as db_name, hwid as spu_id, dsid, (allocated_bytes/1048576) as allocated_mbytes from _v_sys_relation_xdb sys, _v_sys_object_dslice_info ds where ds.tblid = sys.objid and dsid in (1,2,3,4) and allocated_mbytes > 1000 order by  allocated_mbytes desc, table_name,db_name, dsid; 
+--------------http://databasebestpractices.com/query-find-database-backup-time-netezza/
+Query to find database backup time – Netezza
+select DBName, OPTYPE, starttime, lastupdate, (lastupdate-starttime)/60 as DurationInMinutes from _v_backup_history where status='COMPLETED' and DBNAME is NOT NULL and StartTime>'2017-04-01 00:00:00' order by DBName, starttime 

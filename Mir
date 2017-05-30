@@ -1,0 +1,4 @@
+How to remove the Witness from a Database Mirroring Session – SQL Server 
+1) Connect to principal server 2) use master ALTER DATABASE dbname SET WITNESS OFF ; — To remove the witness 3)confirm the status of mirroring with below statement: select mirroring_safety_level ,mirroring_safety_level_desc from sys.database_mirroring
+Back-out plan is:
+1)connect to principal 2) Use Master ALTER DATABASE <database_name> SET WITNESS = <server_network_address> example: ALTER DATABASE AdventureWorks SET WITNESS = ‘TCP://DBSERVER3:5022’ –To add witness to mirroring 3) confirm the status of mirroring with below statement: select mirroring_safety_level ,mirroring_safety_level_desc from sys.database_mirroring if the level value is 1 = Off [asynchronous] and 2 = Full [synchronous]

@@ -1,0 +1,9 @@
+--TempDB information:USE tempdbGO
+sp_helpfile
+-- Check Transcation logspace usage for all databasesDBCC SQLPERF(LOGSPACE)GO
+-- Check open transcationsDBCC OPENTRAN(tempdb)GO
+-- Clean all buffers and cachesDBCC FREEPROCCACHEGO
+DBCC DROPCLEANBUFFERSGO
+DBCC FREESYSTEMCACHE ('ALL')GO
+DBCC FREESESSIONCACHEGO
+-- Now shrink the file to your desired size--DBCC shrinkfile (tempdev, 3311) -- tempdev is filename of TempDB DBCC SHRINKDATABASE(N'tempdb' ) -- Database nameGO-- Make sure that there is no running transaction which uses the tempdb while shrinking!-- This is most trickiest part of it all.

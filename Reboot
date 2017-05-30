@@ -1,0 +1,6 @@
+Powershell:
+1)Get-WmiObject -class Win32_OperatingSystem | Select-Object  __SERVER,@{label='LastBootUpTime';expression={$_.ConvertToDateTime($_.LastBootUpTime)}}
+2)$date = wmic os get lastbootuptime | Select-String "\d\S+" | % { $_.Matches } | % { $_.Value }[Management.ManagementDateTimeConverter]::ToDateTime($date)
+3)Get-CimInstance -Class Win32_OperatingSystem | Select-Object LastBootUpTime
+CMD:
+1)systeminfo | find "System Boot Time"

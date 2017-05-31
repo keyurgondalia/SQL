@@ -1,0 +1,22 @@
+--Use the below T-SQL script to generate the complete list of tables that have more indexes that columns in a given database:
+SELECT DISTINCT
+schema_name(so.schema_id) AS 'SchemaName', 
+object_name(so.object_id) AS 'TableName',
+CASE objectproperty(max(so.object_id), 'TableHasClustIndex')
+WHEN 0 THEN count(si.index_id) - 1
+ELSE count(si.index_id)
+END AS 'IndexCount',
+MAX(d.ColumnCount) AS 'ColumnCount'
+FROM sys.objects so (NOLOCK)
+JOIN sys.indexes si (NOLOCK) ON so.object_id = si.object_id AND so.type in (N'U',N'V')
+JOIN sysindexes dmv (NOLOCK) ON so.object_id = dmv.id AND si.index_id = dmv.indid
+FULL OUTER JOIN (SELECT object_id, count(1) AS ColumnCount FROM sys.columns (NOLOCK) GROUP BY object_id) d 
+ON d.object_id = so.object_id
+WHERE so.is_ms_shipped = 0
+AND so.object_id not in (select major_id FROM sys.extended_properties (NOLOCK) where name = N'microsoft_database_tools_support')
+AND indexproperty(so.object_id, si.name, 'IsStatistics') = 0
+GROUP BY so.schema_id, so.object_id
+HAVING(CASE objectproperty(MAX(so.object_id), 'TableHasClustIndex')
+WHEN 0 THEN COUNT(si.index_id) - 1
+ELSE COUNT(si.index_id)
+END > MAX(d.ColumnCount))
